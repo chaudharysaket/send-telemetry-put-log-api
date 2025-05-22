@@ -18,7 +18,7 @@ Resources:
     Properties:
       CodeUri: newrelic_example_python/
       Description: A simple Lambda, with New Relic telemetry
-      FunctionName: newrelic-example-python
+      FunctionName: send-telemetry-with-PutLogEvents
       Handler: newrelic_lambda_wrapper.handler
       Runtime: python3.13
       Architectures:
@@ -33,9 +33,7 @@ Resources:
           NEW_RELIC_LICENSE_KEY: <Your-New-Relic-License-Key>
       Layers:
         - arn:aws:lambda:us-east-1:451483290750:layer:NewRelicPython313:14
-      Policies:
-        - AWSSecretsManagerGetSecretValuePolicy:
-            SecretArn: !ImportValue NewRelicLicenseKeySecret-NewRelic-LicenseKeySecretARN
+
 Outputs:
   NewRelicExample:
     Description: "Hello World Lambda Function ARN"
