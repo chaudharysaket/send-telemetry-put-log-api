@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: And example of a simple instrumented Python Lambda
+
+Parameters:
+  NRAccountId:
+    Type: String
+    Description: Your New Relic account ID; necessary for distributed tracing.
+    AllowedPattern: '[0-9]+'
+
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  NewRelicExample:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: newrelic_example_python/
+      Description: A simple Lambda, with New Relic telemetry
+      FunctionName: newrelic-example-python
+      Handler: newrelic_lambda_wrapper.handler
+      Runtime: python3.13
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          NEW_RELIC_ACCOUNT_ID: <Your-New-Relic-Account-ID>
+          NEW_RELIC_EXTENSION_LOG_LEVEL: DEBUG
+          NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS: true
+          NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS: true
+          NEW_RELIC_LAMBDA_HANDLER: app.lambda_handler
+          NEW_RELIC_LICENSE_KEY: <Your-New-Relic-License-Key>
+      Layers:
+        - arn:aws:lambda:us-east-1:451483290750:layer:NewRelicPython313:14
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !ImportValue NewRelicLicenseKeySecret-NewRelic-LicenseKeySecretARN
+Outputs:
+  NewRelicExample:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt NewRelicExample.Arn
+  NewRelicExampleIamRole:
+    Description: "Implicit IAM Role created for Newrelic Example function"
+    Value: !GetAtt NewRelicExampleRole.Arn
